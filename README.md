@@ -8,9 +8,10 @@
 - Handling of multiple file formats, including Jupyter Notebooks (.ipynb), and PDFs
 - Web crawling functionality to extract content from linked pages up to a specified depth
 - Integration with Sci-Hub for automatic downloading of research papers using DOIs or PMIDs
-- Text preprocessing, including compressed and uncompressed outputs, stopword removal, and lowercase conversion, with intelligent handling of XML-encapsulated content.
+- Text preprocessing, including compressed and uncompressed outputs, stopword removal, and lowercase conversion
+- Intelligent text preprocessing that preserves XML structure for XML-formatted inputs
 - Automatic copying of uncompressed text to the clipboard for easy pasting into LLMs
-- Token count reporting for both compressed and uncompressed outputs (excluding XML tags for accurate content-only counts)
+- Token count reporting for both compressed and uncompressed outputs, with XML tags removed for accurate counting
 - XML encapsulation of output for improved LLM performance
 
 ![image](https://github.com/jimmc414/1filellm/assets/6346529/73c24bcb-7be7-4b67-8591-3f1404b98fba)
@@ -43,8 +44,9 @@
                                    |   clipboard         |         | - Pyperclip          |
                                    | - Reports token     |         | - Wget               |
                                    |   count             |         | - Tqdm               |
-                                   +---------------------+         | - Rich               |
-                                           |                       +----------------------+
+                                   | - Rich               |
+                                   +---------------------+         +----------------------+
+                                           |                       
                                            |
                                            v
                                     +---------------------+
@@ -145,7 +147,20 @@ python onefilellm.py https://github.com/jimmc414/1filellm
 ```
 
 ### Expected Inputs and Resulting Outputs
-The tool supports the following input options, with their corresponding output actions. Note that the input file extensions for GitHub repositories and local folders are selected based on the `allowed_extensions` list in `onefilellm.py`, which currently includes:
+The tool supports the following input options:
+
+- Local file path (e.g., C:\documents\report.pdf)
+- Local directory path (e.g., C:\projects\research) -> (files of selected filetypes segmented into one flat text file)
+- GitHub repository URL (e.g., https://github.com/jimmc414/onefilellm) -> (Repo files of selected filetypes segmented into one flat text file)
+- GitHub pull request URL (e.g., https://github.com/dear-github/dear-github/pull/102) -> (Pull request diff detail and comments and entire repository content concatenated into one flat text file)
+- GitHub issue URL (e.g., https://github.com/isaacs/github/issues/1191) -> (Issue details, comments, and entire repository content concatenated into one flat text file)
+- ArXiv paper URL (e.g., https://arxiv.org/abs/2401.14295) -> (Full paper PDF to text file)
+- YouTube video URL (e.g., https://www.youtube.com/watch?v=KZ_NlnmPQYk) -> (Video transcript to text file)
+- Webpage URL (e.g., https://llm.datasette.io/en/stable/) -> (To scrape pages to x depth in segmented text file)
+- Sci-Hub Paper DOI (Digital Object Identifier of Sci-Hub hosted paper) (e.g., 10.1053/j.ajkd.2017.08.002) -> (Full Sci-Hub paper PDF to text file)
+- Sci-Hub Paper PMID (PubMed Identifier of Sci-Hub hosted paper) (e.g., 29203127) -> (Full Sci-Hub paper PDF to text file)
+-
+The tool supports the following input options, with their corresponding output actions. Note that the input file extensions are selected based on the following section of code (Applicable to Repos only):
 
 ```python
 allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example']
@@ -242,7 +257,7 @@ All output is now encapsulated in XML tags. This change was implemented based on
 
 Where `[source_type]` could be one of: "github_repository", "github_pull_request", "github_issue", "arxiv_paper", "youtube_transcript", "web_documentation", "sci_hub_paper", or "local_directory".
 
-This XML structure provides clear delineation of different content types and sources, potentially improving the LLM's understanding and processing of the input.
+The `escape_xml` function now explicitly *does not* escape single or double quotes, meaning they will appear as `"` and `'` in the output, not `&quot;` and `&apos;`. This XML structure provides clear delineation of different content types and sources, potentially improving the LLM's understanding and processing of the input.
 
 ## Recent Changes
 

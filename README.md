@@ -8,11 +8,10 @@
 - Handling of multiple file formats, including Jupyter Notebooks (.ipynb), and PDFs
 - Web crawling functionality to extract content from linked pages up to a specified depth
 - Integration with Sci-Hub for automatic downloading of research papers using DOIs or PMIDs
-- Text preprocessing, including compressed and uncompressed outputs, stopword removal, and lowercase conversion
-- XML encapsulation of output for improved LLM performance
-- Intelligent text preprocessing that attempts to preserve XML structure for structured inputs, falling back to plain text processing otherwise.
+- Text preprocessing, including compressed and uncompressed outputs, stopword removal, lowercase conversion, and preservation of XML structure when processing content
 - Automatic copying of uncompressed text to the clipboard for easy pasting into LLMs
 - Token count reporting for both compressed and uncompressed outputs
+- XML encapsulation of output for improved LLM performance
 
 ![image](https://github.com/jimmc414/1filellm/assets/6346529/73c24bcb-7be7-4b67-8591-3f1404b98fba)
 
@@ -122,15 +121,20 @@ pip install -U -r requirements.txt
 
 ### GitHub Personal Access Token
 
-**Important:** The script now strictly requires a valid `GITHUB_TOKEN` environment variable. It will raise an error if the token is not set or if it retains the default placeholder value. Please ensure you set this token to avoid runtime errors.
+To access private GitHub repositories, generate a personal access token as described in the 'Obtaining a GitHub Personal Access Token' section.
 
-To access private GitHub repositories, you need a personal access token. Follow these steps:
+You must set your GitHub Personal Access Token as an environment variable named `GITHUB_TOKEN`. The script will raise an error if this environment variable is not set correctly.
 
-1. Log in to your GitHub account and go to Settings.
-2. Navigate to Developer settings > Personal access tokens.
-3. Click on "Generate new token" and provide a name.
-4. Select the necessary scopes (at least `repo` for private repositories).
-5. Click "Generate token" and copy the token value.
+- For Windows:
+  ```shell
+  setx GITHUB_TOKEN "YourGitHubToken"
+  ```
+
+- For Linux:
+  ```shell
+  echo 'export GITHUB_TOKEN="YourGitHubToken"' >> ~/.bashrc
+  source ~/.bashrc
+  ```
 
 ### Setup
 
@@ -154,7 +158,24 @@ python onefilellm.py https://github.com/jimmc414/1filellm
 ```
 
 ### Expected Inputs and Resulting Outputs
-The tool supports the following input options, with their corresponding output actions. 
+The tool supports the following input options:
+
+- Local file path (e.g., C:\documents\report.pdf)
+- Local directory path (e.g., C:\projects\research) -> (files of selected filetypes segmented into one flat text file)
+- GitHub repository URL (e.g., https://github.com/jimmc414/onefilellm) -> (Repo files of selected filetypes segmented into one flat text file)
+- GitHub pull request URL (e.g., https://github.com/dear-github/dear-github/pull/102) -> (Pull request diff detail and comments and entire repository content concatenated into one flat text file)
+- GitHub issue URL (e.g., https://github.com/isaacs/github/issues/1191) -> (Issue details, comments, and entire repository content concatenated into one flat text file)
+- ArXiv paper URL (e.g., https://arxiv.org/abs/2401.14295) -> (Full paper PDF to text file)
+- YouTube video URL (e.g., https://www.youtube.com/watch?v=KZ_NlnmPQYk) -> (Video transcript to text file)
+- Webpage URL (e.g., https://llm.datasette.io/en/stable/) -> (To scrape pages to x depth in segmented text file)
+- Sci-Hub Paper DOI (Digital Object Identifier of Sci-Hub hosted paper) (e.g., 10.1053/j.ajkd.2017.08.002) -> (Full Sci-Hub paper PDF to text file)
+- Sci-Hub Paper PMID (PubMed Identifier of Sci-Hub hosted paper) (e.g., 29203127) -> (Full Sci-Hub paper PDF to text file)
+-
+The tool supports the following input options, with their corresponding output actions. Note that the input file extensions are selected based on the following section of code (Applicable to Repos only):
+
+```python
+allowed_extensions = ['.xyz', '.pdq', '.example']
+```
 
 **The output for all options is encapsulated in LLM prompt-appropriate XML and automatically copied to the clipboard.**
 
@@ -220,22 +241,9 @@ To access private GitHub repositories, you need a personal access token. Follow 
 4. Select the necessary scopes (at least `repo` for private repositories).
 5. Click "Generate token" and copy the token value.
 
-In the `onefilellm.py` script, replace `GITHUB_TOKEN` with your actual token or set it as an environment variable:
-
-- For Windows:
-  ```shell
-  setx GITHUB_TOKEN "YourGitHubToken"
-  ```
-
-- For Linux:
-  ```shell
-  echo 'export GITHUB_TOKEN="YourGitHubToken"' >> ~/.bashrc
-  source ~/.bashrc
-  ```
-
 ## XML Output Format
 
-All output is now encapsulated in XML tags. This change was implemented based on evaluations showing that LLMs perform better with prompts structured in XML. The general structure of the output is as follows:
+All output is now encapsulated in XML tags. This change was implemented based on evaluations showing that LLMs perform better with prompts structured in XML. The content within XML tags will have `&`, `<`, and `>` characters escaped to `&amp;`, `&lt;`, and `&gt;` respectively. Apostrophes and quotation marks are not escaped, as this has shown to be more beneficial for LLM ingestion. The general structure of the output is as follows:
 
 ```xml
 <source type="[source_type]" [additional_attributes]>
@@ -247,15 +255,11 @@ All output is now encapsulated in XML tags. This change was implemented based on
 
 Where `[source_type]` could be one of: "github_repository", "github_pull_request", "github_issue", "arxiv_paper", "youtube_transcript", "web_documentation", "sci_hub_paper", or "local_directory".
 
-Note: For improved readability by LLMs, apostrophes and quotation marks within the content are no longer escaped to HTML entities (`&apos;`, `&quot;`) but remain as literal characters.
-
 This XML structure provides clear delineation of different content types and sources, potentially improving the LLM's understanding and processing of the input.
 
 ## Recent Changes
 
 - **2024-07-29:**
-  - Enhanced `preprocess_text` function to intelligently preserve XML structure where detected, improving LLM understanding of structured inputs.
-  - Implemented stricter validation for `GITHUB_TOKEN` environment variable, now raising an error if not properly set.
   - Updated output format to encapsulate content in XML tags. This change was implemented due to evaluations showing that LLMs perform better with prompts structured in XML.
   - Added tests for GitHub issues and GitHub pull requests to improve robustness and reliability.
   - Updated various processing functions to return formatted content instead of writing directly to files, improving consistency and testability.

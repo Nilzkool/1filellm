@@ -1,6 +1,5 @@
 # 1FileLLM: Efficient Data Aggregation for LLM Ingestion
-1FileLLM is a command-line tool designed to streamline the creation of information-dense prompts for large language models (LLMs).
-It aggregates and preprocesses data from a variety of sources, compiling them into a single text file that is automatically copied to your clipboard for quick use.
+1FileLLM is a command-line tool designed to streamline the creation of information-dense prompts for large language models (LLMs). It aggregates and preprocesses data from a variety of sources, compiling them into a single text file that is automatically copied to your clipboard for quick use.
 
 ## Features
 
@@ -57,7 +56,7 @@ It aggregates and preprocesses data from a variety of sources, compiling them in
                                     +---------------------+
                                            |
                                            v
-                                    +---------------------+
+                                    +---------------------++
                                     | Processing Modules  |
                                     |---------------------|
                                     | - GitHub Repo Proc  |
@@ -122,8 +121,28 @@ pip install -U -r requirements.txt
 
 ### GitHub Personal Access Token
 
-To access private GitHub repositories, generate a personal access token as described in the 'Obtaining a GitHub Personal Access Token' section.
-**Note:** The script will raise an error if the `GITHUB_TOKEN` environment variable is not set.
+To use `onefilellm.py`, you need a GitHub personal access token, even for public repositories, as the tool authenticates all GitHub API requests. Without it, the script will raise an error.
+
+Follow these steps to obtain a token:
+
+1. Log in to your GitHub account and go to Settings.
+2. Navigate to Developer settings > Personal access tokens.
+3. Click on "Generate new token" and provide a name.
+4. Select the necessary scopes (at least `repo` for private repositories).
+5. Click "Generate token" and copy the token value.
+
+Then, set it as an environment variable:
+
+- For Windows:
+  ```shell
+  setx GITHUB_TOKEN "YourGitHubToken"
+  ```
+
+- For Linux:
+  ```shell
+  echo 'export GITHUB_TOKEN="YourGitHubToken"' >> ~/.bashrc
+  source ~/.bashrc
+  ```
 
 ### Setup
 
@@ -220,44 +239,21 @@ The script generates the following output files:
 - To modify the allowed file types for repository processing, update the `allowed_extensions` list in the code.
 - To change the depth of web crawling, adjust the `max_depth` variable in the code.
 
-## Obtaining a GitHub Personal Access Token
-
-To access private GitHub repositories, you need a personal access token. Follow these steps:
-
-1. Log in to your GitHub account and go to Settings.
-2. Navigate to Developer settings > Personal access tokens.
-3. Click on "Generate new token" and provide a name.
-4. Select the necessary scopes (at least `repo` for private repositories).
-5. Click "Generate token" and copy the token value.
-
-In the `onefilellm.py` script, replace `GITHUB_TOKEN` with your actual token or set it as an environment variable:
-
-- For Windows:
-  ```shell
-  setx GITHUB_TOKEN "YourGitHubToken"
-  ```
-
-- For Linux:
-  ```shell
-  echo 'export GITHUB_TOKEN="YourGitHubToken"' >> ~/.bashrc
-  source ~/.bashrc
-  ```
-
 ## XML Output Format
 
 All output is now encapsulated in XML tags. This change was implemented based on evaluations showing that LLMs perform better with prompts structured in XML. The general structure of the output is as follows:
 
 ```xml
 <source type="[source_type]" [additional_attributes]>
-  <[content_type]>
-    [Extracted content]
-  </[content_type]>
+  <[content_tag_name]>
+    [Extracted content (apostrophes and quotes are not XML-escaped)]
+  </[content_tag_name]>
 </source>
 ```
 
 Where `[source_type]` could be one of: "github_repository", "github_pull_request", "github_issue", "arxiv_paper", "youtube_transcript", "web_documentation", "sci_hub_paper", or "local_directory".
 
-Note that `&`, `<`, and `>` characters within the extracted content are escaped to `&amp;`, `&lt;`, and `&gt;` respectively. Apostrophes and quotation marks are *not* escaped.
+Common `[content_tag_name]` examples include `file`, `page`, `paper`, `transcript`, `pull_request_info`, `issue_info`, and `repository`.
 
 This XML structure provides clear delineation of different content types and sources, potentially improving the LLM's understanding and processing of the input.
 
@@ -273,12 +269,8 @@ This XML structure provides clear delineation of different content types and sou
   - Updated requirements.txt.
   - Added Rich library to `onefilellm.py`.
 - **2024-04-04:**
-  - Added GitHub PR and issue tests.
-  - Added GitHub PR and issues.
-  - Added tests for GitHub PRs and issues.
-  - Added ability to concatenate specific GitHub issue and repo when GitHub issue URL is passed.
-  - Updated tests to include pull request changes.
-  - Added ability to concatenate pull request and repo when GitHub pull request URL is passed.
+  - Added GitHub PR and issue processing functionality, including concatenated pull request/issue details with full repository content.
+  - Added corresponding tests for GitHub PRs and issues.
 - **2024-04-03:**
   - Included the ability to pull a complete GitHub pull request given the GitHub pull request URL.
   - Updated `onefilellm.py` to return an error when Sci-hub is inaccessible or no document is found.

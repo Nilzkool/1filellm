@@ -1,5 +1,6 @@
 # 1FileLLM: Efficient Data Aggregation for LLM Ingestion
-1FileLLM is a command-line tool designed to streamline the creation of information-dense prompts for large language models (LLMs). It aggregates and preprocesses data from a variety of sources, compiling them into a single text file that is automatically copied to your clipboard for quick use.
+1FileLLM is a command-line tool designed to streamline the creation of information-dense prompts for large language models (LLMs).
+It aggregates and preprocesses data from a variety of sources, compiling them into a single text file that is automatically copied to your clipboard for quick use.
 
 ## Features
 
@@ -122,6 +123,7 @@ pip install -U -r requirements.txt
 ### GitHub Personal Access Token
 
 To access private GitHub repositories, generate a personal access token as described in the 'Obtaining a GitHub Personal Access Token' section.
+**Note:** The script will raise an error if the `GITHUB_TOKEN` environment variable is not set.
 
 ### Setup
 
@@ -228,7 +230,7 @@ To access private GitHub repositories, you need a personal access token. Follow 
 4. Select the necessary scopes (at least `repo` for private repositories).
 5. Click "Generate token" and copy the token value.
 
-The `GITHUB_TOKEN` environment variable **must** be set with your personal access token. The script will raise an `EnvironmentError` if it is not set.
+In the `onefilellm.py` script, replace `GITHUB_TOKEN` with your actual token or set it as an environment variable:
 
 - For Windows:
   ```shell
@@ -254,6 +256,8 @@ All output is now encapsulated in XML tags. This change was implemented based on
 ```
 
 Where `[source_type]` could be one of: "github_repository", "github_pull_request", "github_issue", "arxiv_paper", "youtube_transcript", "web_documentation", "sci_hub_paper", or "local_directory".
+
+Note that `&`, `<`, and `>` characters within the extracted content are escaped to `&amp;`, `&lt;`, and `&gt;` respectively. Apostrophes and quotation marks are *not* escaped.
 
 This XML structure provides clear delineation of different content types and sources, potentially improving the LLM's understanding and processing of the input.
 

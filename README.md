@@ -56,7 +56,7 @@
                                     +---------------------+
                                            |
                                            v
-                                    +---------------------+
+                                    +---------------------++
                                     | Processing Modules  |
                                     |---------------------|
                                     | - GitHub Repo Proc  |
@@ -121,7 +121,18 @@ pip install -U -r requirements.txt
 
 ### GitHub Personal Access Token
 
-To access private GitHub repositories, generate a personal access token as described in the 'Obtaining a GitHub Personal Access Token' section.
+To access private GitHub repositories, you need a personal access token. The `GITHUB_TOKEN` environment variable must be set with your token. The script will raise an error if this variable is not configured.
+
+- For Windows:
+  ```shell
+  setx GITHUB_TOKEN "YourGitHubToken"
+  ```
+
+- For Linux:
+  ```shell
+  echo 'export GITHUB_TOKEN="YourGitHubToken"' >> ~/.bashrc
+  source ~/.bashrc
+  ```
 
 ### Setup
 
@@ -157,11 +168,11 @@ The tool supports the following input options:
 - Webpage URL (e.g., https://llm.datasette.io/en/stable/) -> (To scrape pages to x depth in segmented text file)
 - Sci-Hub Paper DOI (Digital Object Identifier of Sci-Hub hosted paper) (e.g., 10.1053/j.ajkd.2017.08.002) -> (Full Sci-Hub paper PDF to text file)
 - Sci-Hub Paper PMID (PubMed Identifier of Sci-Hub hosted paper) (e.g., 29203127) -> (Full Sci-Hub paper PDF to text file)
-- 
+-
 The tool supports the following input options, with their corresponding output actions. Note that the input file extensions are selected based on the following section of code (Applicable to Repos only):
 
 ```python
-allowed_extensions = ['.xyz', '.pdq', '.example']
+allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example']
 ```
 
 **The output for all options is encapsulated in LLM prompt-appropriate XML and automatically copied to the clipboard.**
@@ -220,15 +231,7 @@ The script generates the following output files:
 
 ## Obtaining a GitHub Personal Access Token
 
-To access private GitHub repositories, you need a personal access token. Follow these steps:
-
-1. Log in to your GitHub account and go to Settings.
-2. Navigate to Developer settings > Personal access tokens.
-3. Click on "Generate new token" and provide a name.
-4. Select the necessary scopes (at least `repo` for private repositories).
-5. Click "Generate token" and copy the token value.
-
-In the `onefilellm.py` script, replace `GITHUB_TOKEN` with your actual token or set it as an environment variable:
+To access private GitHub repositories, you need a personal access token. The `GITHUB_TOKEN` environment variable must be set with your token. The script will raise an error if this variable is not configured.
 
 - For Windows:
   ```shell
@@ -265,7 +268,7 @@ This XML structure provides clear delineation of different content types and sou
   - Updated various processing functions to return formatted content instead of writing directly to files, improving consistency and testability.
 - **2024-05-17:** Added ability to pass path or URL as command line argument.
 - **2024-05-16:** Updated text colors.
-- **2024-05-11:** 
+- **2024-05-11:
   - Updated requirements.txt.
   - Added Rich library to `onefilellm.py`.
 - **2024-04-04:**
@@ -281,9 +284,6 @@ This XML structure provides clear delineation of different content types and sou
 
 
 ## Notes
-- For Repos, Modify this line of code to add or remove filetypes processed: ``` allowed_extensions = ['.py', '.txt', '.js', '.rst', '.sh', '.md', '.pyx', '.html', '.yaml','.json', '.jsonl', '.ipynb', '.h', '.c', '.sql', '.csv'] ```
+- For Repos, Modify this line of code to add or remove filetypes processed: ``` allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example'] ```
 - For Web scraping, Modify this line of code to change how many links deep from the starting URL to include ``` max_depth = 2 ```
 - Token counts are displayed in the console for both output files.
-
-
-

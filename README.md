@@ -43,8 +43,9 @@
                                    |   clipboard         |         | - Pyperclip          |
                                    | - Reports token     |         | - Wget               |
                                    |   count             |         | - Tqdm               |
-                                   +---------------------+         | - Rich               |
-                                           |                       +----------------------+
+                                   |   [color rich]      |         | - Rich               |
+                                   +---------------------+         +----------------------+
+                                           |
                                            |
                                            v
                                     +---------------------+
@@ -228,7 +229,7 @@ To access private GitHub repositories, you need a personal access token. Follow 
 4. Select the necessary scopes (at least `repo` for private repositories).
 5. Click "Generate token" and copy the token value.
 
-In the `onefilellm.py` script, replace `GITHUB_TOKEN` with your actual token or set it as an environment variable:
+It is crucial to set the `GITHUB_TOKEN` environment variable. If not set, the script will raise an error. For security, it's recommended to set it as an environment variable rather than directly modifying the script.
 
 - For Windows:
   ```shell
@@ -283,4 +284,4 @@ This XML structure provides clear delineation of different content types and sou
 ## Notes
 - For Repos, Modify this line of code to add or remove filetypes processed: ``` allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example'] ```
 - For Web scraping, Modify this line of code to change how many links deep from the starting URL to include ``` max_depth = 2 ```
-- Token counts are displayed in the console for both output files.
+- Token counts are displayed in the console for both output files, calculated after XML tags are stripped from the content.

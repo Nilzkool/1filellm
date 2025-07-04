@@ -43,7 +43,7 @@
                                    |   clipboard         |         | - Pyperclip          |
                                    | - Reports token     |         | - Wget               |
                                    |   count             |         | - Tqdm               |
-                                   |   [color rich]      |         | - Rich               |
+                                   | - Rich               |
                                    +---------------------+         +----------------------+
                                            |
                                            |
@@ -162,7 +162,7 @@ The tool supports the following input options:
 The tool supports the following input options, with their corresponding output actions. Note that the input file extensions are selected based on the following section of code (Applicable to Repos only):
 
 ```python
-allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example']
+allowed_extensions = ['.xyz', '.pdq', '.example']
 ```
 
 **The output for all options is encapsulated in LLM prompt-appropriate XML and automatically copied to the clipboard.**
@@ -221,7 +221,7 @@ The script generates the following output files:
 
 ## Obtaining a GitHub Personal Access Token
 
-To access private GitHub repositories, you need a personal access token. Follow these steps:
+To access private GitHub repositories, generate a personal access token. Follow these steps:
 
 1. Log in to your GitHub account and go to Settings.
 2. Navigate to Developer settings > Personal access tokens.
@@ -229,7 +229,7 @@ To access private GitHub repositories, you need a personal access token. Follow 
 4. Select the necessary scopes (at least `repo` for private repositories).
 5. Click "Generate token" and copy the token value.
 
-It is crucial to set the `GITHUB_TOKEN` environment variable. If not set, the script will raise an error. For security, it's recommended to set it as an environment variable rather than directly modifying the script.
+You must set your GitHub Personal Access Token as an environment variable. The script will raise an error if it's not set.
 
 - For Windows:
   ```shell
@@ -282,6 +282,6 @@ This XML structure provides clear delineation of different content types and sou
 
 
 ## Notes
-- For Repos, Modify this line of code to add or remove filetypes processed: ``` allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example'] ```
+- For Repos, modify this line of code in `onefilellm.py` to add or remove filetypes processed: ``` allowed_extensions = ['.py', '.txt', '.js', '.tsx', '.ts', '.md', '.cjs', '.html', '.json', '.ipynb', '.h', '.localhost', '.sh', '.yaml', '.example'] ```
 - For Web scraping, Modify this line of code to change how many links deep from the starting URL to include ``` max_depth = 2 ```
-- Token counts are displayed in the console for both output files, calculated after XML tags are stripped from the content.
+- Token counts are displayed in the console for both output files.

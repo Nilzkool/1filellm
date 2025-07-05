@@ -1,4 +1,5 @@
 target:
     url: "https://github.com/Nilzkool/1filellm/blob/main/README.md"
 
-reinit: "222ee4c60066cbca"
+sync_branch: "main"
+reinit: "ea679c5f96cbaf93"
